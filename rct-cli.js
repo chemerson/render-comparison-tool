@@ -6,7 +6,7 @@ var webdriver = require('selenium-webdriver')
 
 const { Builder, Capabilities, By } = require('selenium-webdriver');
 const { ConsoleLogHandler, Region, TestResults, GeneralUtils, MatchLevel } = require('@applitools/eyes-sdk-core');
-const { Eyes, Target, SeleniumConfiguration, DeviceName, VisualGridRunner, BrowserType, ScreenOrientation, StitchMode } = require('@applitools/eyes-selenium');
+const { Eyes, Target, Configuration, DeviceName, VisualGridRunner, ClassicRunner, BrowserType, ScreenOrientation, StitchMode, BatchInfo } = require('@applitools/eyes-selenium');
 const pry = require('pryjs')
 
 var setMethods = [
@@ -49,6 +49,10 @@ var setMethods = [
 // 2) OR use baseline branch names and force the matches to take place with a simple branch name (but environment could differ and then I'm back to 1)
 
 async function getBrowser() {
+
+    // Get a browser
+    // TODO: Add Sauce, Browserstack, Perfecto, Plain Selenium grid
+
     var options = new chrome.Options();
        // options.addArguments('--headless');
         options.addArguments('disable-gpu');
@@ -63,80 +67,72 @@ async function getBrowser() {
     return driver;
 }
 
-async function eyesSetup_grid() {
-    const eyes = new Eyes(new VisualGridRunner());
-    
-    const configuration = new SeleniumConfiguration();
-    configuration.appName = 'VG Javascript 1';
-    configuration.testName = 'URL Test';
-    
-    configuration.concurrentSessions = 50;
-    configuration.addBrowser( 500,  800, BrowserType.CHROME  );
-    configuration.addBrowser( 500,  800, BrowserType.FIREFOX );
-    configuration.addBrowser( 1000, 800, BrowserType.CHROME  );
-    configuration.addBrowser( 1000, 800, BrowserType.FIREFOX );
-    configuration.addBrowser( 1500, 800, BrowserType.CHROME  );
-    configuration.addBrowser(1500, 800, BrowserType.FIREFOX );
-    configuration.addBrowser(1200, 800, BrowserType.CHROME);
-    configuration.addBrowser(1200, 800, BrowserType.FIREFOX);
-    configuration.addDevice(DeviceName.iPhone_4, ScreenOrientation.PORTRAIT);
+async function eyesSetup(eyesConfig) {
 
-    await eyes.setConfiguration(configuration);
+    // Return an eyes object ready to rock
 
-    return eyes;
-}
+    //try {
+        const runner = eyesConfig.useGrid ? new VisualGridRunner() : new ClassicRunner();
+        let eyes = new Eyes(runner);
 
-async function eyesSetup_classic() {
-    let eyes = new Eyes();
+        eyes.setApiKey(eyesConfig.apiKey);
+        eyes.setLogHandler(new ConsoleLogHandler(false));
 
-    return eyes;
-}
-
-async function eyesSetup_common(reyes) {
-
-    reyes.setApiKey(process.env.APPLITOOLS_API_KEY);
-    reyes.setLogHandler(new ConsoleLogHandler(false));
-    
-    for (let i = 0; i < setMethods.length; i++) {
-        console.log(setMethods[i]);
-        try { 
-            await eval('r' + setMethods[i]);
-        } catch(err) {
-            console.log("Set Method: " + setMethods[i] + " Error: " + err);
+        for (let i = 0; i < setMethods.length; i++) {
+            console.log(setMethods[i]);
+            try { 
+                await eval(setMethods[i]);
+            } catch(err) {
+                console.log("Set Method: " + setMethods[i] + " Error: " + err);
+            }
         }
-    }
 
-    return reyes;
+        const batchInfo = new BatchInfo(eyesConfig.batchName);
+        batchInfo.setId(eyesConfig.batchId);
+
+        if(eyesConfig.useGrid) {
+
+            const configuration = new Configuration();
+            configuration.setBatch(batchInfo)
+            configuration.setConcurrentSessions(5);
+            configuration.setAppName(eyesConfig.appName);
+            configuration.setTestName(eyesConfig.testName);
+            configuration.setMatchLevel('Layout');
+            configuration.addBrowser(eyesConfig.vx,  eyesConfig.vy, BrowserType.CHROME);
+            console.log('-------------');
+            eyes.setConfiguration(configuration);
+            console.log('-------------');
+        }
+/*     } catch(err) {
+        console.log('-------------');
+        console.error(err.message);
+        console.log('-------------');
+    } */
+    return eyes;
 }
 
-async function runEyes(rdriver, reyes) {
-
-    let appName = 'VG compare';
-    let testName = 'Cross render test';
+async function runEyes(rdriver, reyes, eyesConfig) {
 
     try {
         
-        await reyes.open(rdriver, appName, testName, { width: 1600, height: 900 });
+        
+
+        await reyes.open(rdriver, eyesConfig.appName, eyesConfig.testName, { width: eyesConfig.vx, height: eyesConfig.vy });
 
         // await rdriver.get('https://www.timeanddate.com/worldclock/usa/melbourne');  // causes JSON error !!!! Stringify of an element
         // await rdriver.get('https://applitools.github.io/demo/TestPages/FramesTestPage');
-
         await rdriver.get('https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new');
 
-
-        //await eyes.open(driver, 'JS Selenium 4', 'JS Selenium 4', { width: 1600, height: 900 });
         
         var currentUrl = await rdriver.getCurrentUrl().then(function(url){
-            console.log(url);
+            console.log('Testing URL: ' + url);
             return url;
             });
 
         await reyes.check(currentUrl, Target.window().fully());
-
-        const results = await reyes.close(false);
-
-       // FOR VG const results = await reyes.getRunner().getAllTestResults();
-        console.log(results); // eslint-disable-line
+        await reyes.close(false);
+        const results = await reyes.getRunner().getAllTestResults();
+        console.log(results); 
     
     } catch(err) {
 
@@ -154,31 +150,25 @@ async function runEyes(rdriver, reyes) {
 
 }
 
-async function baselineSetup(reyes) {
 
-    try{
-        reyes.setBaselineBranchName("setBranchName_2");
+;(async function() {
 
-  //  reyes.setBranchName("setBranchName_1");
-    } catch(err) {
-        console.error('baselineSetup method error: ' + err.message);
-    }
-}
-
-async function main() {
-  
-    //Globals
     var program = require('commander');
 
     program
         .version('0.0.1', '-v, --version', 'output the current version')
         .description('A tool for comparing UFG and Classic renders on various platforms')
-        .option('-k --key [key]', 'Set your Applitools API Key. e.g. -k key')
-        .option('-u --url [url]', 'Add the site URL you want to generate a sitemap for. e.g. -u https://www.seleniumconf.com')
-        .option('-sk, --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver')
-        .option('-bn --batchName [batchName]', 'Name for the final comparison batch')
-        .option('-su  --serverUrl [serverUrl]', 'Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com')
+        .option('-k --key [key]', 'Set your Applitools API Key. e.g. -k key', process.env.APPLITOOLS_API_KEY)
+        .option('-u --url [url]', 'Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com')
+        .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver')
+        .option('-bn --batchName [batchName]', 'Name for the final comparison batch', 'rct batch')
+        .option('-vx --xdim [xdim]', 'X dimension of the viewport size. e.g. -vx 1600', 1600)
+        .option('-vy --ydim [ydim]', 'Y dimension of the viewport size. e.g. -vy 900', 900)
+        .option('-su  --serverUrl [serverUrl]', 'Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com', 'https://eyesapi.applitools.com')
         .option('-l --log', 'Enable Applitools Debug Logs (Default: false). e.g. --log')
+        .option('-an --appName [appName]', 'Name of the application under test', 'rct app')
+        .option('-tn --testName [testName]', 'The name of the final comparison test in the Applitools batch', 'rct test')
+        .option('-sm --stitchMode [stitchMode]', 'The stitchmode to be used (Default: CSS)', 'CSS')
         .on('--help', () => {
             console.log('');
             console.log('Example call:');
@@ -186,16 +176,48 @@ async function main() {
         })
         .parse(process.argv);
 
-    //Global variables
-    let batchId = 'rct-cli-' +  Math.round((new Date()).getTime() / 1000).toString();
-    console.log("My Applitools Batch ID: " + batchId)
+    var eyesConfig = {
+        useGrid: true,
+        vx: program.xdim,
+        vy: program.ydim,
+        batchName: program.batchName,
+        batchId: 'rct-cli-' +  Math.round((new Date()).getTime() / 1000).toString(),
+        apiKey: program.key,
+        url: program.url,
+        appName: program.appName,
+        testName: program.testName,
+        serverUrl: program.serverUrl,
+        stitchMode: program.stitchMode
+    }
 
-    var driver = await getBrowser(program);
-    var eyes = await eyesSetup_classic();
+    Object.getOwnPropertyNames(eyesConfig).forEach(
+        function (val, idx, array) {
+          console.log(val + ': ' + eyesConfig[val]);
+        }
+      );
 
-    await baselineSetup(eyes);
-    await eyesSetup_common(eyes);
-    await runEyes(driver, eyes);
-}
+    try {
+        let eyes1 = await eyesSetup(eyesConfig);
+       
+        let driver = await getBrowser();
 
-main();
+        
+        await runEyes(driver, eyes1, eyesConfig);
+        
+ /*        eyesConfig.useGrid = false;
+        let eyes2 = await eyesSetup();
+        await runEyes(driver, eyes2, eyesConfig);  */
+
+    } catch(err) {
+
+        console.error(err.message);
+    
+        if (driver && eyes) {
+            await rdriver.quit();
+            await reyes.abortIfNotClosed();
+        }
+
+    }
+
+})()
+
