@@ -30,6 +30,7 @@ var setMethods = [
   'eyes.setMatchLevel(MatchLevel.Strict)',
   //'eyes.setParentBranchName("setParentBranchName")',
   'eyes.setSaveNewTests(true)',
+  'eyes.setSaveFailedTests(true)',
   //'eyes.setScaleRatio(0)',
   'eyes.setServerUrl("https://eyesapi.applitools.com")',
   'eyes.setStitchMode(StitchMode.CSS)',
@@ -69,9 +70,7 @@ async function getBrowser() {
 
 async function eyesSetup(eyesConfig) {
 
-    // Return an eyes object ready to rock
-
-    //try {
+    try {
         const runner = eyesConfig.useGrid ? new VisualGridRunner() : new ClassicRunner();
         let eyes = new Eyes(runner);
 
@@ -99,25 +98,24 @@ async function eyesSetup(eyesConfig) {
             configuration.setTestName(eyesConfig.testName);
             configuration.setMatchLevel('Layout');
             configuration.addBrowser(eyesConfig.vx,  eyesConfig.vy, BrowserType.CHROME);
-            console.log('-------------');
-            eyes.setConfiguration(configuration);
-            console.log('-------------');
+            await eyes.setConfiguration(configuration);
+            return eyes;
         }
-/*     } catch(err) {
-        console.log('-------------');
+    } catch(err) {
         console.error(err.message);
-        console.log('-------------');
-    } */
-    return eyes;
+    } 
+
 }
 
 async function runEyes(rdriver, reyes, eyesConfig) {
 
     try {
-        
-        
 
-        await reyes.open(rdriver, eyesConfig.appName, eyesConfig.testName, { width: eyesConfig.vx, height: eyesConfig.vy });
+        if(eyesConfig.useGrid){
+            await reyes.open(rdriver);
+        } else {
+            await reyes.open(rdriver, eyesConfig.appName, eyesConfig.testName, { width: eyesConfig.vx, height: eyesConfig.vy });
+        }
 
         // await rdriver.get('https://www.timeanddate.com/worldclock/usa/melbourne');  // causes JSON error !!!! Stringify of an element
         // await rdriver.get('https://applitools.github.io/demo/TestPages/FramesTestPage');
@@ -133,6 +131,8 @@ async function runEyes(rdriver, reyes, eyesConfig) {
         await reyes.close(false);
         const results = await reyes.getRunner().getAllTestResults();
         console.log(results); 
+
+        await rdriver.quit();
     
     } catch(err) {
 
@@ -143,11 +143,7 @@ async function runEyes(rdriver, reyes, eyesConfig) {
             await reyes.abortIfNotClosed();
         }
 
-    } finally {
-        await rdriver.quit();
-        await reyes.abortIfNotClosed();
-    }
-
+    } 
 }
 
 
@@ -197,16 +193,18 @@ async function runEyes(rdriver, reyes, eyesConfig) {
       );
 
     try {
-        let eyes1 = await eyesSetup(eyesConfig);
-       
-        let driver = await getBrowser();
 
-        
+        let eyes1 = await eyesSetup(eyesConfig);
+        let driver = await getBrowser();
         await runEyes(driver, eyes1, eyesConfig);
         
- /*        eyesConfig.useGrid = false;
+        eyesConfig.useGrid = false;
+        console.log('-------------2');
         let eyes2 = await eyesSetup();
-        await runEyes(driver, eyes2, eyesConfig);  */
+        console.log('-------------2');
+        console.log('-------------3');
+        await runEyes(driver, eyes2, eyesConfig);  
+        console.log('-------------3');
 
     } catch(err) {
 
