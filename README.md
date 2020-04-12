@@ -39,5 +39,5 @@ rct-cli --h
 ## Troubleshooting
 
 1) Baseline is the classic run instead of the visual grid
-... The environment tag name was assigned to the classic run. It may not work to simply delete the tag or the environment record
-... in the dashboard due to a bug. Instead, use the command line option 
+
+   The environment tag name was assigned to the classic run. It may not work to simply delete the tag or the environment record in the dashboard due to a bug. Instead, use the command line option -en to create a custom prefix for the env name.
