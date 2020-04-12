@@ -19,6 +19,7 @@ const { Eyes,
     StitchMode, 
     BatchInfo } = require('@applitools/eyes-selenium');
 
+const sleep = require('sleep');
 const pry = require('pryjs')
 
 var eyesConfig = {};
@@ -44,6 +45,7 @@ var eyesConfig = {};
         .option('-hl --headless [headless]', 'Run the browser headless (Default: false)', false)
         .option('-ml --matchlevel [matchlevel]', 'Run the browser headless (Default: false)', 'Strict')
         .option('-b --browser [browser]', 'Use Chrome or FireFox (Default: Chrome)', 'Chrome')
+        .option('-en --envname [envname]', 'Set a custom prefix for the environment name assigned to the grid run', false)
         .on('--help', () => {
             console.log('');
             console.log('Example call:');
@@ -63,24 +65,23 @@ var eyesConfig = {};
         serverUrl: program.serverurl,
         stitchMode: program.stitchmode.toLowerCase(),
         log: program.log,
-        envName: 'Render from grid ' + program.xdim + 'x' + program.ydim,
+        envName: program.envname ? program.envname + program.xdim + 'x' + program.ydim : 'Render from grid ' + program.xdim + 'x' + program.ydim,
         headless: program.headless,
         matchLevel: program.matchlevel,
-        browser: program.browser.toLowerCase()
+        browser: program.browser.toLowerCase(),
     }
-
 
 
     try {
 
-        logEyesConfig()
+        //logEyesConfig()
 
         eyesConfig.useGrid = true
         const eyesVisualGrid = await eyesSetup()
 
         l('Grid run begin')
         await runEyes(eyesVisualGrid);
-        l('Grid run end')
+        l('Grid run end\n')
 
         eyesConfig.useGrid = false
         eyesConfig.closeBatch = true
@@ -88,12 +89,12 @@ var eyesConfig = {};
 
         l('Classic run begin')
         await runEyes(eyesClassic);  
-        l('Classic run end')  
+        l('Classic run end\n') 
 
     } catch(err) {
         console.error(err.message);
-        if(eyesVisualGrid) eyesVisualGrid.abortIfNotClosed();
-        if(eyesClassic) eyesClassic.abortIfNotClosed();
+        if(typeof eyesVisualGrid !== 'undefined') eyesVisualGrid.abortIfNotClosed();
+        if(typeof eyesClassic !== 'undefined') eyesClassic.abortIfNotClosed();
     }
 
 })()
@@ -131,6 +132,7 @@ async function getBrowser() {
 
     } catch(err) {
         console.error('ERROR: function getBrowser() : ' + err.message);
+        throw err;
     }
 }
 
@@ -162,10 +164,10 @@ async function eyesSetup() {
         configuration.setServerUrl(eyesConfig.serverUrl);
         configuration.setHideScrollbars(true);
         configuration.setSendDom(true);
+        configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
         eyes.setConfiguration(configuration);
 
-        if(!eyesConfig.useGrid) {eyes.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});}
-
+       // if(!eyesConfig.useGrid) {eyes.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});}
         eyes.setApiKey(eyesConfig.apiKey);
         if(eyesConfig.log){eyes.setLogHandler(new ConsoleLogHandler(false));}        
 
@@ -208,11 +210,11 @@ async function runEyes(reyes) {
 
     } catch(err) {
         console.error('ERROR: function runEyes() : ' + err.message);
-        driver.quit();
+        await driver.quit();
         throw err;
     } finally {
         if (driver && reyes) {
-            driver.quit();
+            await driver.quit();
             reyes.abortIfNotClosed();
         }
     }

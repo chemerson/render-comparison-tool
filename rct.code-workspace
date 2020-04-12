@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../eyes-selenium-render"
+		},
+		{
+			"path": "../js-sandbox"
 		}
 	],
 	"settings": {}
