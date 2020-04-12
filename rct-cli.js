@@ -33,7 +33,8 @@ var eyesConfig = {};
         .description('A tool for comparing UFG and Classic renders on various platforms')
         .requiredOption('-k --key [key]', 'Set your Applitools API Key. e.g. -k key', process.env.APPLITOOLS_API_KEY)
         .requiredOption('-u --url [url]', 'Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com', 'https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new')
-        .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver')
+        .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver', false)
+        .option('-sn --sauceun [sauceun]', 'Your Saucelabs username. Default: local headless chromedriver', false)
         .option('-bn --batchname [batchname]', 'Name for the final comparison batch', 'rct batch')
         .option('-vx --xdim [xdim]', 'X dimension of the viewport size. e.g. -vx 1600', 1600)
         .option('-vy --ydim [ydim]', 'Y dimension of the viewport size. e.g. -vy 900', 900)
@@ -69,6 +70,8 @@ var eyesConfig = {};
         headless: program.headless,
         matchLevel: program.matchlevel,
         browser: program.browser.toLowerCase(),
+        sauceKey: program.saucekey,
+        sauceUsername: program.sauceun
     }
 
 
@@ -106,30 +109,58 @@ async function getBrowser() {
     // TODO: Add Sauce, Browserstack, Perfecto, Plain Selenium grid
 
     try{
-        switch(eyesConfig.browser) {
-            case 'chrome' : {
-                var options = await new chrome.Options();
-                if(eyesConfig.headless){options.addArguments('--headless');}
-                let driver = new webdriver.Builder()
-                    .forBrowser('chrome')
-                    .withCapabilities(webdriver.Capabilities.chrome())
-                    .setChromeOptions(options)          
-                    .build(); 
+
+        if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false) {
+
+            l('** SAUCE **');
+            driver = await new webdriver.Builder().withCapabilities({
+                'browserName': 'chrome',
+                'platformName': 'Windows 10',
+                'browserVersion': 'latest',
+                'goog:chromeOptions' : { 'w3c' : true },
+                'sauce:options': {
+                    'username': eyesConfig.sauceUsername,
+                    'accessKey': eyesConfig.sauceKey,
+                    "recordVideo": false,
+                    "recordScreenshots": false,
+                    "screenResolution": '800x600',
+                    'maxDuration': 3600,
+                    'idleTimeout': 1000
+                }
+            }).usingServer("https://ondemand.saucelabs.com/wd/hub").build();
+     
+            await driver.getSession().then(function (sessionid) {
+                driver.sessionID = sessionid.id_;
+            });
+
+            l('** SAUCE END **');
+            return driver;
+
+        } else {
+
+            switch(eyesConfig.browser) {
+                case 'chrome' : {
+                    var options = await new chrome.Options();
+                    if(eyesConfig.headless){options.addArguments('--headless');}
+                    let driver = new webdriver.Builder()
+                        .forBrowser('chrome')
+                        .withCapabilities(webdriver.Capabilities.chrome())
+                        .setChromeOptions(options)          
+                        .build(); 
+                        return driver;
+                    }
+    
+                case 'firefox' : {                    
+                    var options = new firefox.Options();
+                    if(eyesConfig.headless){options.addArguments("-headless");}
+                    let driver = await new webdriver.Builder()
+                        .forBrowser('firefox')
+                        .setFirefoxOptions(options)
+                        .build();
                     return driver;
                 }
-
-            case 'firefox' : {                    
-                var options = new firefox.Options();
-                if(eyesConfig.headless){options.addArguments("-headless");}
-                let driver = await new webdriver.Builder()
-                    .forBrowser('firefox')
-                    .setFirefoxOptions(options)
-                    .build();
-                return driver;
             }
-
         }
-
     } catch(err) {
         console.error('ERROR: function getBrowser() : ' + err.message);
         throw err;
@@ -167,7 +198,6 @@ async function eyesSetup() {
         configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
         eyes.setConfiguration(configuration);
 
-       // if(!eyesConfig.useGrid) {eyes.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});}
         eyes.setApiKey(eyesConfig.apiKey);
         if(eyesConfig.log){eyes.setLogHandler(new ConsoleLogHandler(false));}        
 
