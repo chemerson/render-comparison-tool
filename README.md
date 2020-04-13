@@ -42,7 +42,7 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
 
 
 ## To Do
-1) Add support for safari
+1) Add support for safari, ie11, ie10, edge, chrome devices
 2) Create a baseline run from the vg-cli tool
 2) Add support for older browser versions
 3) Eyes log to a file
