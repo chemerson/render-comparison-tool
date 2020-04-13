@@ -56,3 +56,5 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
 1) Baseline is the classic run instead of the visual grid
 
    The environment tag name was assigned to the classic run. It may not work to simply delete the tag or the environment record in the dashboard due to a bug. Instead, use the command line option -en to create a custom prefix for the env name.
+
+2) Seems like java4 supports viewport resizing better than 3 so leave that in the package, and make sure your chrome version is up to date. Chrome 80 viewports don't seem to let the sdk resize them

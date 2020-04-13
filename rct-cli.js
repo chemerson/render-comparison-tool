@@ -88,7 +88,7 @@ var eyesConfig = {};
 
         eyesConfig.useGrid = false
         eyesConfig.closeBatch = true
-        eyesConfig.testName = 'something different'
+        logEyesConfig()
         const eyesClassic = await eyesSetup()
 
         l('Classic run begin')
@@ -181,26 +181,24 @@ async function eyesSetup() {
         
         const configuration = new Configuration();
 
-        configuration.setBatch(batchInfo)
-        configuration.setConcurrentSessions(5);
-        configuration.setAppName(eyesConfig.appName);
-        configuration.setTestName(eyesConfig.testName);
-        configuration.setMatchLevel(eyesConfig.matchLevel);
-        configuration.setSaveFailedTests(true);
-        configuration.addBrowser(parseInt(eyesConfig.vx),  parseInt(eyesConfig.vy), BrowserType.CHROME);
-        configuration.setBaselineEnvName(eyesConfig.envName);
+        configuration
+            .setBatch(batchInfo)
+            .setConcurrentSessions(5)
+            .setAppName(eyesConfig.appName)
+            .setTestName(eyesConfig.testName)
+            .setMatchLevel(eyesConfig.matchLevel)
+            .setSaveFailedTests(true)
+            .addBrowser(parseInt(eyesConfig.vx),  parseInt(eyesConfig.vy), BrowserType.CHROME)
+            .setBaselineEnvName(eyesConfig.envName)
+            .setServerUrl(eyesConfig.serverUrl)
+            .setHideScrollbars(true)
+            .setSendDom(true)
+            .setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
         switch (eyesConfig.stitchMode) {
             case 'css': configuration.setStitchMode(StitchMode.CSS); break;
             case 'scroll': configuration.setStitchMode(StitchMode.SCROLL); break;
             default: configuration.setStitchMode(StitchMode.CSS);
         }
-        configuration.setServerUrl(eyesConfig.serverUrl);
-        configuration.setHideScrollbars(true);
-        configuration.setSendDom(true);
-        //if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false)
-       configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
-       // eyes.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
-
 
         eyes.setConfiguration(configuration);
 
