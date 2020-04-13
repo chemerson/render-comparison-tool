@@ -77,8 +77,6 @@ var eyesConfig = {};
 
     try {
 
-        logEyesConfig()
-
         eyesConfig.useGrid = true
         const eyesVisualGrid = await eyesSetup()
 
@@ -88,7 +86,6 @@ var eyesConfig = {};
 
         eyesConfig.useGrid = false
         eyesConfig.closeBatch = true
-        logEyesConfig()
         const eyesClassic = await eyesSetup()
 
         l('Classic run begin')
