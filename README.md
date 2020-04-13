@@ -32,12 +32,6 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
  - -en --envname        : Set a custom prefix for the environment name assigned to the grid run (default: false)
  - -h, --help           : display help for command
 
-## Installing
-
-```sh
-npm install [under construction]
-``
-
 ## Troubleshooting
 
 1) Baseline is the classic run instead of the visual grid
