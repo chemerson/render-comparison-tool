@@ -3,7 +3,10 @@
 A tool for compariing UFG and Classic renders.
 Limited to chrome or firefox latest versions. Sauce will use windows 10.
 
-#Example
+The output in the Applitools dashboard will be one batch with two tests. The first test is the capture
+of the grid rendering that is automatically accepted to the baseline. The second test is the comparison of the grid to the classic run.
+
+# Example
 
 ```sh
 $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
@@ -31,6 +34,11 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
  - -b --browser         : Use Chrome or FireFox (Default: Chrome)
  - -en --envname        : Set a custom prefix for the environment name assigned to the grid run (default: false)
  - -h, --help           : display help for command
+
+
+## To Do
+1) Add support for safari
+2) Add support for older browser versions
 
 ## Troubleshooting
 
