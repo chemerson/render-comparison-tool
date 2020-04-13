@@ -1,12 +1,13 @@
 # Render Comparison Tool
 
 A tool for compariing UFG and Classic renders.
+Limited to chrome or firefox latest versions. Sauce will use windows 10.
 
 # Usage
 - Options:
 -  -v, --version        output the current version
 -  -k --key             Set your Applitools API Key. e.g. -k key (will default to APPLITOOLS_API_KEY in env)
--  -u --url             Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com (default:
+-  -u --url             Add the site URL you want to compare. e.g. -u https://www.applitools.com (default:
                                  "https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new")
  - -sk --saucekey       Your Saucelabs key (Default: local headless chrome, latest)
  - -sn --sauceusername  Your Saucelabs username
@@ -34,7 +35,7 @@ npm install [under construction]
 ## Using the package
 
 ```sh
-rct-cli --h
+$ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml layout -bn 'rct cli example'
 ```
 
 ## Troubleshooting
