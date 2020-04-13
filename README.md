@@ -1,6 +1,6 @@
 # Render Comparison Tool
 
-A tool for compariing UFG and Classic renders.
+A tool for comparing UFG and Classic renders.
 Limited to chrome or firefox latest versions. Sauce will use windows 10.
 
 The output in the Applitools dashboard will be one batch with two tests. The first test is the capture
@@ -50,6 +50,8 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
 5) Make this an npm package that can be globally installed
 6) when using Sauce, add the ability to split the render between local and sauce
 7) add region support for target instead of just window.fully()
+
+  long term goals: go through the other SDK's to compare them to each other and the grid, and put it in Jenkins for loads of fun
 
 ## Troubleshooting
 
