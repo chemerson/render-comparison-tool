@@ -109,10 +109,10 @@ async function getBrowser() {
 
         if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false) {
 
-            l('** SAUCE **');
+            l('Using Saucelabs');
             let tags = ["render compare"];
             let driver = await new webdriver.Builder().withCapabilities({
-                'browserName': 'chrome',
+                'browserName': eyesConfig.browser,
                 'platformName': 'Windows 10',
                 'browserVersion': 'latest',
                 'goog:chromeOptions' : { 'w3c' : true },
@@ -121,12 +121,11 @@ async function getBrowser() {
                     'accessKey': eyesConfig.sauceKey,
                     "recordVideo": true,
                     "recordScreenshots": false,
-                    'seleniumVersion': '3.141.59',
-                    'build': 'js-w3c-examples',
-                    'name': 'js-w3c',
+                    'build': 'render compare',
+                    'name': 'render compare',
                     'maxDuration': 3600,
                     'idleTimeout': 1000,
-                    'screenResolution': eyesConfig.vx + 'x' + eyesConfig.vy,
+                    'screenResolution': '2560x1600', // max size for sauce then eyes reduces
                     'tags': tags
                 }
             }).usingServer("https://ondemand.saucelabs.com:443/wd/hub")
