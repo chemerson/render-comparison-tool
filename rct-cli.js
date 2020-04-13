@@ -77,7 +77,7 @@ var eyesConfig = {};
 
     try {
 
-        //logEyesConfig()
+        logEyesConfig()
 
         eyesConfig.useGrid = true
         const eyesVisualGrid = await eyesSetup()
@@ -88,6 +88,7 @@ var eyesConfig = {};
 
         eyesConfig.useGrid = false
         eyesConfig.closeBatch = true
+        eyesConfig.testName = 'something different'
         const eyesClassic = await eyesSetup()
 
         l('Classic run begin')
@@ -109,7 +110,7 @@ async function getBrowser() {
 
         if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false) {
 
-            l('Using Saucelabs');
+            l('Using Saucelabs (please wait)');
             let tags = ["render compare"];
             let driver = await new webdriver.Builder().withCapabilities({
                 'browserName': eyesConfig.browser,
@@ -133,9 +134,7 @@ async function getBrowser() {
             
             await driver.getSession().then(function (sessionid) {
                 driver.sessionID = sessionid.id_;
-            }); 
-
-            l('** SAUCE END **');
+            });
 
             return driver;
 
@@ -199,7 +198,10 @@ async function eyesSetup() {
         configuration.setHideScrollbars(true);
         configuration.setSendDom(true);
         //if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false)
-            configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
+       configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
+       // eyes.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
+
+
         eyes.setConfiguration(configuration);
 
         eyes.setApiKey(eyesConfig.apiKey);
