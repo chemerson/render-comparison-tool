@@ -8,11 +8,11 @@ A tool for compariing UFG and Classic renders.
 -  -k --key             Set your Applitools API Key. e.g. -k key (will default to APPLITOOLS_API_KEY in env)
 -  -u --url             Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com (default:
                                  "https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new")
- - -sk --saucekey       Your Saucelabs key. Default: local headless chrome
- - -sn --sauceusername  Your Saucelabs username.
+ - -sk --saucekey       Your Saucelabs key (Default: local headless chrome, latest)
+ - -sn --sauceusername  Your Saucelabs username
  - -bn --batchname      Name for the final comparison batch (default: "rct batch")
- - -vx --xdim           X dimension of the viewport size. e.g. -vx 1600 (default: 1600)
- - -vy --ydim           Y dimension of the viewport size. e.g. -vy 900 (default: 900)
+ - -vx --xdim           X dimension of the viewport size. e.g. -vx 1600 (default: 1280)
+ - -vy --ydim           Y dimension of the viewport size. e.g. -vy 900 (default: 800)
  - -su  --serverurl     Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com (default:
                                  "https://eyesapi.applitools.com")
  - -l --log             Enable Applitools Debug Logs (Default: false). e.g. --log (default: false)

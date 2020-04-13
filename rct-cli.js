@@ -36,8 +36,8 @@ var eyesConfig = {};
         .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver', false)
         .option('-sn --sauceun [sauceun]', 'Your Saucelabs username. Default: local headless chromedriver', false)
         .option('-bn --batchname [batchname]', 'Name for the final comparison batch', 'rct batch')
-        .option('-vx --xdim [xdim]', 'X dimension of the viewport size. e.g. -vx 1600', 1600)
-        .option('-vy --ydim [ydim]', 'Y dimension of the viewport size. e.g. -vy 900', 900)
+        .option('-vx --xdim [xdim]', 'X dimension of the viewport size. e.g. -vx 1600', 1280)
+        .option('-vy --ydim [ydim]', 'Y dimension of the viewport size. e.g. -vy 900', 800)
         .option('-su  --serverurl [serverurl]', 'Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com', 'https://eyesapi.applitools.com')
         .option('-l --log [log]', 'Enable Applitools Debug Logs (Default: false). e.g. --log', false)
         .option('-an --appname [appname]', 'Name of the application under test', 'rct app')
@@ -105,15 +105,13 @@ var eyesConfig = {};
 
 async function getBrowser() {
 
-    // Get a browser
-    // TODO: Add Sauce, Browserstack, Perfecto, Plain Selenium grid
-
     try{
 
         if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false) {
 
             l('** SAUCE **');
-            driver = await new webdriver.Builder().withCapabilities({
+            let tags = ["render compare"];
+            let driver = await new webdriver.Builder().withCapabilities({
                 'browserName': 'chrome',
                 'platformName': 'Windows 10',
                 'browserVersion': 'latest',
@@ -121,19 +119,25 @@ async function getBrowser() {
                 'sauce:options': {
                     'username': eyesConfig.sauceUsername,
                     'accessKey': eyesConfig.sauceKey,
-                    "recordVideo": false,
+                    "recordVideo": true,
                     "recordScreenshots": false,
-                    "screenResolution": '800x600',
+                    'seleniumVersion': '3.141.59',
+                    'build': 'js-w3c-examples',
+                    'name': 'js-w3c',
                     'maxDuration': 3600,
-                    'idleTimeout': 1000
+                    'idleTimeout': 1000,
+                    'screenResolution': eyesConfig.vx + 'x' + eyesConfig.vy,
+                    'tags': tags
                 }
-            }).usingServer("https://ondemand.saucelabs.com/wd/hub").build();
-     
+            }).usingServer("https://ondemand.saucelabs.com:443/wd/hub")
+            .build();
+            
             await driver.getSession().then(function (sessionid) {
                 driver.sessionID = sessionid.id_;
-            });
+            }); 
 
             l('** SAUCE END **');
+
             return driver;
 
         } else {
@@ -195,7 +199,8 @@ async function eyesSetup() {
         configuration.setServerUrl(eyesConfig.serverUrl);
         configuration.setHideScrollbars(true);
         configuration.setSendDom(true);
-        configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
+        //if(eyesConfig.sauceKey !== false && eyesConfig.sauceUsername !== false)
+            configuration.setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
         eyes.setConfiguration(configuration);
 
         eyes.setApiKey(eyesConfig.apiKey);
