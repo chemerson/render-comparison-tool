@@ -3,6 +3,12 @@
 A tool for compariing UFG and Classic renders.
 Limited to chrome or firefox latest versions. Sauce will use windows 10.
 
+#Example
+
+```sh
+$ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
+```
+
 # Usage
 - Options:
 -  -v, --version        output the current version
@@ -30,13 +36,7 @@ Limited to chrome or firefox latest versions. Sauce will use windows 10.
 
 ```sh
 npm install [under construction]
-```
-
-## Using the package
-
-```sh
-$ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml layout -bn 'rct cli example'
-```
+``
 
 ## Troubleshooting
 
