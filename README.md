@@ -25,10 +25,10 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
  - -l --log             : Enable Applitools Debug Logs (Default: false). e.g. --log (default: false)
  - -an --appname        : Name of the application under test (default: "rct app")
  - -tn --testname       : The name of the final comparison test in the Applitools batch (default: "rct test")
- - -sm --stitchmode     : The stitchmode to be used (Default: CSS) (default: "CSS")
- - -hl --headless       : Run the browser headless (Default: false) (default: false)
- - -ml --matchlevel     : Run the browser headless (Default: false) (default: "Strict")
- - -b --browser         : Use Chrome or FireFox (Default: Chrome) (default: "Chrome")
+ - -sm --stitchmode     : The stitchmode to be used (Default: CSS) 
+ - -hl --headless       : Run the browser headless (Default: false) 
+ - -ml --matchlevel     : Run the browser headless (Default: false) 
+ - -b --browser         : Use Chrome or FireFox (Default: Chrome)
  - -en --envname        : Set a custom prefix for the environment name assigned to the grid run (default: false)
  - -h, --help           : display help for command
 
