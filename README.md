@@ -1,4 +1,4 @@
-# Render Comparison Tool
+# Render Comparison Utility
 
 A tool for comparing UFG and Classic renders.
 Limited to chrome or firefox latest versions. Sauce will use windows 10.
