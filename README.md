@@ -9,14 +9,14 @@ of the grid rendering that is automatically accepted to the baseline. The second
 # Example
 
 ```sh
-$ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
+$ node src/rcu-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
 ```
 
 # Installation
 
 1) Clone or download the zip for this repo
-2) run 'npm install'
-3) run using node
+2) run 'npm install -g'
+3) from the command line run "rcu-cli"
 
 # Usage
 - Options:
@@ -47,7 +47,7 @@ $ node rct-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml L
 2) Add support for older browser versions
 3) Eyes log to a file
 4) Add support for a configuration file
-5) Make this an npm package that can be globally installed
+5) Done! - Make this an npm package that can be globally installed
 6) when using Sauce, add the ability to split the render between local and sauce
 7) add region support for target instead of just window.fully()
 
