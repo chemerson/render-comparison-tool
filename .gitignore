@@ -1,3 +1,4 @@
 node_modules
 rct.code-workspace
 .*
+package-lock.json

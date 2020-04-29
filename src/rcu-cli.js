@@ -1,3 +1,4 @@
+
 'use strict';
 
 require('chromedriver');
@@ -24,14 +25,14 @@ const pry = require('pryjs')
 
 var eyesConfig = {};
 
-;(async function() {
+exports.compare = async function() {
 
     var program = require('commander');
 
     program
         .version('0.0.1', '-v, --version', 'output the current version')
         .description('A tool for comparing UFG and Classic renders on various platforms')
-        .requiredOption('-k --key [key]', 'Set your Applitools API Key. e.g. -k key', process.env.APPLITOOLS_API_KEY)
+        .option('-k --key [key]', 'Set your Applitools API Key. e.g. -k key', process.env.APPLITOOLS_API_KEY)
         .requiredOption('-u --url [url]', 'Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com', 'https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new')
         .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver', false)
         .option('-sn --sauceun [sauceun]', 'Your Saucelabs username. Default: local headless chromedriver', false)
@@ -98,7 +99,7 @@ var eyesConfig = {};
         if(typeof eyesClassic !== 'undefined') eyesClassic.abortIfNotClosed();
     }
 
-})()
+}
 
 
 async function getBrowser() {

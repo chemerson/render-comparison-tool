@@ -1,23 +1,25 @@
 {
-  "name": "render-comparison-tool",
+  "name": "render-comparison-utility",
   "version": "0.0.1",
   "description": "Compares UFG to Classic renders on various platforms",
-  "main": "index.js",
+  "main": "src/rcu-cli.js",
+  "bin": {
+    "rcu-cli": "scripts/run-rcu-cli.js"
+  },
   "dependencies": {
     "@applitools/eyes-sdk-core": "^9.1.0",
     "@applitools/eyes-selenium": "^4.33.31",
-    "selenium-webdriver": "^4.0.0-alpha.4",
     "chai": "^4.2.0",
     "chromedriver": "^81.0.0",
     "geckodriver": "^1.19.1",
     "mocha": "^7.1.1",
     "npm": "^6.14.4",
     "pryjs": "^1.0.3",
+    "selenium-webdriver": "^4.0.0-alpha.4",
     "sleep": "^6.1.0"
   },
   "devDependencies": {
-    "commander": "^5.0.0",
-    "es6-promise-pool": "^2.5.0"
+    "commander": "^5.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
