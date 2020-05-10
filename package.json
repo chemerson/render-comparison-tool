@@ -3,9 +3,21 @@
   "version": "0.0.1",
   "description": "Compares UFG to Classic renders on various platforms",
   "main": "src/rcu-cli.js",
+  "engines": {
+    "node": ">=10.3.0"
+  },
   "bin": {
     "rcu-cli": "scripts/run-rcu-cli.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src",
+    "scripts"
+  ],
+  "author": "Chris Emerson <chris.emerson@applitools.com>",
+  "license": "UNLICENSED",
   "dependencies": {
     "@applitools/eyes-sdk-core": "^9.1.0",
     "@applitools/eyes-selenium": "^4.33.31",
@@ -23,7 +35,5 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
+  }
 }

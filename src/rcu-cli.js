@@ -1,10 +1,10 @@
 
 'use strict';
 
-require('chromedriver');
-require('geckodriver');
-var chrome = require('selenium-webdriver/chrome');
-var firefox = require('selenium-webdriver/firefox');
+require('chromedriver')
+require('geckodriver')
+var chrome = require('selenium-webdriver/chrome')
+var firefox = require('selenium-webdriver/firefox')
 var webdriver = require('selenium-webdriver')
 
 const { Builder, Capabilities, By } = require('selenium-webdriver');
@@ -36,13 +36,13 @@ exports.compare = async function() {
         .requiredOption('-u --url [url]', 'Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com', 'https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new')
         .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver', false)
         .option('-sn --sauceun [sauceun]', 'Your Saucelabs username. Default: local headless chromedriver', false)
-        .option('-bn --batchname [batchname]', 'Name for the final comparison batch', 'rct batch')
+        .option('-bn --batchname [batchname]', 'Name for the final comparison batch', 'rcu batch')
         .option('-vx --xdim [xdim]', 'X dimension of the viewport size. e.g. -vx 1600', 1280)
         .option('-vy --ydim [ydim]', 'Y dimension of the viewport size. e.g. -vy 900', 800)
         .option('-su  --serverurl [serverurl]', 'Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com', 'https://eyesapi.applitools.com')
         .option('-l --log [log]', 'Enable Applitools Debug Logs (Default: false). e.g. --log', false)
-        .option('-an --appname [appname]', 'Name of the application under test', 'rct app')
-        .option('-tn --testname [testname]', 'The name of the final comparison test in the Applitools batch', 'rct test')
+        .option('-an --appname [appname]', 'Name of the application under test', 'rcu app')
+        .option('-tn --testname [testname]', 'The name of the final comparison test in the Applitools batch', 'rcu test')
         .option('-sm --stitchmode [stitchmode]', 'The stitchmode to be used (Default: CSS)', 'CSS')
         .option('-hl --headless [headless]', 'Run the browser headless (Default: false)', false)
         .option('-ml --matchlevel [matchlevel]', 'Run the browser headless (Default: false)', 'Strict')
@@ -51,7 +51,7 @@ exports.compare = async function() {
         .on('--help', () => {
             console.log('');
             console.log('Example call:');
-            console.log('  $ rct-cli -k 1234567890abcxyz -u http://www.applitools.com');
+            console.log('  $ rcu-cli -k 1234567890abcxyz -u http://www.applitools.com');
         })
         .parse(process.argv);
 
@@ -59,7 +59,7 @@ exports.compare = async function() {
         vx: program.xdim,
         vy: program.ydim,
         batchName: program.batchname,
-        batchId: 'rct-cli-' +  Math.round((new Date()).getTime() / 1000).toString(),
+        batchId: 'rcu-cli-' +  Math.round((new Date()).getTime() / 1000).toString(),
         apiKey: program.key,
         url: program.url,
         appName: program.appname,
@@ -92,6 +92,7 @@ exports.compare = async function() {
         l('Classic run begin')
         await runEyes(eyesClassic);  
         l('Classic run end\n') 
+
 
     } catch(err) {
         console.error(err.message);
@@ -187,7 +188,7 @@ async function eyesSetup() {
             .setMatchLevel(eyesConfig.matchLevel)
             .setSaveFailedTests(true)
             .addBrowser(parseInt(eyesConfig.vx),  parseInt(eyesConfig.vy), BrowserType.CHROME)
-            .setBaselineEnvName(eyesConfig.envName)
+            .setBaselineEnvName(eyesConfig.envName) 
             .setServerUrl(eyesConfig.serverUrl)
             .setHideScrollbars(true)
             .setSendDom(true)
