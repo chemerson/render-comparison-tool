@@ -74,7 +74,7 @@ exports.compare = async function() {
         sauceKey: program.saucekey,
         sauceUsername: program.sauceun
     }
-
+    eyesConfig.batchId +=
 
     try {
 

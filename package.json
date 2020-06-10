@@ -19,8 +19,8 @@
   "author": "Chris Emerson <chris.emerson@applitools.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@applitools/eyes-sdk-core": "^10.3.0",
-    "@applitools/eyes-selenium": "^4.37.0",
+    "@applitools/eyes-sdk-core": "^11.0.2",
+    "@applitools/eyes-selenium": "^4.38.0",
     "chai": "^4.2.0",
     "chromedriver": "^83.0.0",
     "geckodriver": "^1.19.1",
@@ -31,7 +31,7 @@
     "sleep": "^6.2.0"
   },
   "devDependencies": {
-    "commander": "^5.0.0"
+    "commander": "^5.1.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
