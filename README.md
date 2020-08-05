@@ -9,7 +9,13 @@ of the grid rendering that is automatically accepted to the baseline. The second
 # Example
 
 ```sh
-$ node src/rcu-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
+$ rcu-cli -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
+```
+
+If you want to make sure the grid renders at lower or higher resolutions in different breakpoint range than the one the viewport
+is captured in correctly.
+```sh
+$ rcu-cli —k <YOUREYESKEY> -u http://www.applitools.com -vx 750 -vy 800 -vpx 1200 -vpy 800 -hl
 ```
 
 # Installation
@@ -29,6 +35,8 @@ $ node src/rcu-cli.js -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -
  - -bn --batchname      : Name for the final comparison batch (default: "rct batch")
  - -vx --xdim           : X dimension of the viewport size. e.g. -vx 1600 (default: 1280)
  - -vy --ydim           : Y dimension of the viewport size. e.g. -vy 900 (default: 800)
+ - -vpx --vpxdim [vpxdim] : 'X dimension of the viewport size for DOM capture. e.g. -vpx 1600', 1280)
+ - -vpy --vpydim [vpydim] : 'Y dimension of the viewport size for DOM capture. e.g. -vpy 900', 800)
  - -su  --serverurl     : Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com 
  - -l --log             : Enable Applitools Debug Logs (Default: false). e.g. --log (default: false)
  - -an --appname        : Name of the application under test (default: "rct app")
