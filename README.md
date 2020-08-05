@@ -12,8 +12,8 @@ of the grid rendering that is automatically accepted to the baseline. The second
 $ rcu-cli -b firefox -vx 1200 -vy 800 -u http://www.applitools.com -ml Layout -bn 'rct cli example'
 ```
 
-If you want to make sure the grid renders at lower or higher resolutions in different breakpoint range than the one the viewport
-is captured in correctly.
+If you want to check the grid renders at lower or higher resolutions in different breakpoint range than the one the viewport is captured in.
+Sometimes JS changes a DOM at the breakpoint.
 ```sh
 $ rcu-cli —k <YOUREYESKEY> -u http://www.applitools.com -vx 750 -vy 800 -vpx 1200 -vpy 800 -hl
 ```
