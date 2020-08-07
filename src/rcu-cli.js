@@ -29,16 +29,21 @@ exports.compare = async function() {
 
     var program = require('commander');
 
+
+//TODO: API key reading from environment and not command line
+
     program
-        .version('0.0.1', '-v, --version', 'output the current version')
+        .version('0.0.2', '-v, --version', 'output the current version')
         .description('A tool for comparing UFG and Classic renders on various platforms')
+        .requiredOption('-u --url [url]', 'Add the site URL you want to test. e.g. -u https://www.applitools.com', 'https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new')
         .option('-k --key [key]', 'Set your Applitools API Key. e.g. -k key', process.env.APPLITOOLS_API_KEY)
-        .requiredOption('-u --url [url]', 'Add the site URL you want to generate a sitemap for. e.g. -u https://www.applitools.com', 'https://www.random.org/integers/?num=100&min=1&max=100&col=5&base=10&format=html&rnd=new')
         .option('-sk --saucekey [saucekey]', 'Your Saucelabs key. Default: local headless chromedriver', false)
         .option('-sn --sauceun [sauceun]', 'Your Saucelabs username. Default: local headless chromedriver', false)
         .option('-bn --batchname [batchname]', 'Name for the final comparison batch', 'rcu batch')
-        .option('-vx --xdim [xdim]', 'X dimension of the viewport size. e.g. -vx 1600', 1280)
-        .option('-vy --ydim [ydim]', 'Y dimension of the viewport size. e.g. -vy 900', 800)
+        .option('-vx --xdim [xdim]', 'X dimension of the viewport and/or render size. e.g. -vx 1600', 1280)
+        .option('-vy --ydim [ydim]', 'Y dimension of the viewport and/or render size size. e.g. -vy 900', 800)
+        .option('-vpx --vpxdim [vpxdim]', 'X dimension of the viewport size for DOM capture. e.g. -vpx 1600', 1280)
+        .option('-vpy --vpydim [vpydim]', 'Y dimension of the viewport size for DOM capture. e.g. -vpy 900', 800)
         .option('-su  --serverurl [serverurl]', 'Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com', 'https://eyesapi.applitools.com')
         .option('-l --log [log]', 'Enable Applitools Debug Logs (Default: false). e.g. --log', false)
         .option('-an --appname [appname]', 'Name of the application under test', 'rcu app')
@@ -53,11 +58,13 @@ exports.compare = async function() {
             console.log('Example call:');
             console.log('  $ rcu-cli -k 1234567890abcxyz -u http://www.applitools.com');
         })
-        .parse(process.argv);
+        .parse(process.argv)
 
     eyesConfig = {
         vx: program.xdim,
         vy: program.ydim,
+        vpx: program.vpxdim,
+        vpy: program.vpydim,
         batchName: program.batchname,
         batchId: 'rcu-cli-' +  Math.round((new Date()).getTime() / 1000).toString(),
         apiKey: program.key,
@@ -74,15 +81,16 @@ exports.compare = async function() {
         sauceKey: program.saucekey,
         sauceUsername: program.sauceun
     }
-    eyesConfig.batchId +=
 
     try {
 
         eyesConfig.useGrid = true
         const eyesVisualGrid = await eyesSetup()
 
+        l(program.opts())
         l('Grid run begin')
-        await runEyes(eyesVisualGrid);
+        l('API Key: ' + eyesConfig.apiKey)
+        await runEyes(eyesVisualGrid)
         l('Grid run end\n')
 
         eyesConfig.useGrid = false
@@ -192,7 +200,7 @@ async function eyesSetup() {
             .setServerUrl(eyesConfig.serverUrl)
             .setHideScrollbars(true)
             .setSendDom(true)
-            .setViewportSize({width: Number(eyesConfig.vx), height: Number(eyesConfig.vy)});
+            .setViewportSize({width: Number(eyesConfig.vpx), height: Number(eyesConfig.vpy)});
         switch (eyesConfig.stitchMode) {
             case 'css': configuration.setStitchMode(StitchMode.CSS); break;
             case 'scroll': configuration.setStitchMode(StitchMode.SCROLL); break;
