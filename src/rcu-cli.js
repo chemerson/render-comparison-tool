@@ -66,7 +66,7 @@ exports.compare = async function() {
         vpx: program.vpxdim,
         vpy: program.vpydim,
         batchName: program.batchname,
-        batchId: 'rcu-cli-' +  Math.round((new Date()).getTime() / 1000).toString(),
+        batchId: 'rcu-cli ' +  Math.round((new Date()).getTime() / 1000).toString(),
         apiKey: program.key,
         url: program.url,
         appName: program.appname,
@@ -74,7 +74,7 @@ exports.compare = async function() {
         serverUrl: program.serverurl,
         stitchMode: program.stitchmode.toLowerCase(),
         log: program.log,
-        envName: program.envname ? program.envname + program.xdim + 'x' + program.ydim : 'Render from grid ' + program.xdim + 'x' + program.ydim,
+        envName: program.envname ? program.envname + program.xdim + 'x' + program.ydim : 'Render from grid ' + program.xdim + 'x' + program.ydim + ' (id ' + Math.round((new Date()).getTime() / 1000).toString() + ')' ,
         headless: program.headless,
         matchLevel: program.matchlevel,
         browser: program.browser.toLowerCase(),
@@ -233,6 +233,7 @@ async function runEyes(reyes) {
             console.log('Testing URL: ' + url);
             return url;
         });
+        await lazyLoadPage(driver)
         await reyes.check(currentUrl, Target.window().fully());
         if(eyesConfig.useGrid) { await reyes.closeAsync() } else { await reyes.close(false) }
         
@@ -301,4 +302,26 @@ function getStepStatus(step) {
       return 'Passed'
     }
   }
+
+async function getPageHeight(driver) {
+    var clientHeight = await driver.executeScript("return document.documentElement.clientHeight");
+    var bodyClientHeight = await driver.executeScript("return document.body.clientHeight");
+    var scrollHeight = await driver.executeScript("return document.documentElement.scrollHeight");
+    var bodyScrollHeight = await driver.executeScript("return document.body.scrollHeight");
+    var maxDocElementHeight = Math.max(clientHeight, scrollHeight);
+    var maxBodyHeight = Math.max(bodyClientHeight, bodyScrollHeight);
+    return Math.max(maxDocElementHeight, maxBodyHeight);
+};
+  
+async function lazyLoadPage(driver) {
+    var height =  await driver.executeScript("return window.innerHeight");
+    var pageHeight = await getPageHeight(driver);
+    for (var j = 0; j < pageHeight; j += (height - 20)) {
+        await driver.executeScript("window.scrollTo(0," + j + ")");
+        sleep.msleep(2000);
+        pageHeight = await getPageHeight(driver);
+    }
+    await driver.executeScript("window.scrollTo(0, 0);");
+    sleep.msleep(2000);
+};
   
