@@ -1,4 +1,3 @@
-
 'use strict';
 
 require('chromedriver')
@@ -8,8 +7,13 @@ var firefox = require('selenium-webdriver/firefox')
 var webdriver = require('selenium-webdriver')
 
 const { Builder, Capabilities, By } = require('selenium-webdriver');
-const { ConsoleLogHandler, Region, TestResults, GeneralUtils, MatchLevel } = require('@applitools/eyes-sdk-core');
-const { Eyes, 
+const { 
+    Regions,
+    TestResults,
+    GeneralUtils,
+    MatchLevel,
+    ConsoleLogHandler,
+    Eyes, 
     Target, 
     Configuration, 
     DeviceName, 
@@ -18,6 +22,7 @@ const { Eyes,
     BrowserType, 
     RectangleSize, 
     StitchMode, 
+    RunnerOptions,
     BatchInfo } = require('@applitools/eyes-selenium');
 
 const sleep = require('sleep');
@@ -43,7 +48,7 @@ exports.compare = async function() {
         .option('-vx --xdim [xdim]', 'X dimension of the viewport and/or render size. e.g. -vx 1600', 1280)
         .option('-vy --ydim [ydim]', 'Y dimension of the viewport and/or render size size. e.g. -vy 900', 800)
         .option('-vpx --vpxdim [vpxdim]', 'X dimension of the viewport size for DOM capture. e.g. -vpx 1600', 1280)
-        .option('-vpy --vpydim [vpydim]', 'Y dimension of the viewport size for DOM capture. e.g. -vpy 900', 800)
+        .option('-vpy --vpydim [vpydim]', 'Y dimension of the viewport size for DOM capture. e.g. -vpy 900', 700)
         .option('-su  --serverurl [serverurl]', 'Set your Applitools  server URL. (Default: https://eyesapi.applitools.com). e.g. -v https://youreyesapi.applitools.com', 'https://eyesapi.applitools.com')
         .option('-l --log [log]', 'Enable Applitools Debug Logs (Default: false). e.g. --log', false)
         .option('-an --appname [appname]', 'Name of the application under test', 'rcu app')
@@ -59,27 +64,29 @@ exports.compare = async function() {
             console.log('  $ rcu-cli -k 1234567890abcxyz -u http://www.applitools.com');
         })
         .parse(process.argv)
+    
+    const options = program.opts();
 
     eyesConfig = {
-        vx: program.xdim,
-        vy: program.ydim,
-        vpx: program.vpxdim,
-        vpy: program.vpydim,
-        batchName: program.batchname,
+        vx: options.xdim,
+        vy: options.ydim,
+        vpx: options.vpxdim,
+        vpy: options.vpydim,
+        batchName: options.batchname,
         batchId: 'rcu-cli ' +  Math.round((new Date()).getTime() / 1000).toString(),
-        apiKey: program.key,
-        url: program.url,
-        appName: program.appname,
-        testName: program.testname,
-        serverUrl: program.serverurl,
-        stitchMode: program.stitchmode.toLowerCase(),
-        log: program.log,
-        envName: program.envname ? program.envname + program.xdim + 'x' + program.ydim : 'Render from grid ' + program.xdim + 'x' + program.ydim + ' (id ' + Math.round((new Date()).getTime() / 1000).toString() + ')' ,
-        headless: program.headless,
-        matchLevel: program.matchlevel,
-        browser: program.browser.toLowerCase(),
-        sauceKey: program.saucekey,
-        sauceUsername: program.sauceun
+        apiKey: options.key,
+        url: options.url,
+        appName: options.appname,
+        testName: options.testname,
+        serverUrl: options.serverurl,
+        stitchMode: options.stitchmode.toLowerCase(),
+        log: options.log,
+        envName: options.envname ? options.envname + options.xdim + 'x' + options.ydim : 'Render from grid ' + options.xdim + 'x' + options.ydim + ' (id ' + Math.round((new Date()).getTime() / 1000).toString() + ')' ,
+        headless: options.headless,
+        matchLevel: options.matchlevel,
+        browser: options.browser.toLowerCase(),
+        sauceKey: options.saucekey,
+        sauceUsername: options.sauceun
     }
 
     try {
@@ -87,7 +94,7 @@ exports.compare = async function() {
         eyesConfig.useGrid = true
         const eyesVisualGrid = await eyesSetup()
 
-        l(program.opts())
+        l(options)
         l('Grid run begin')
         l('API Key: ' + eyesConfig.apiKey)
         await runEyes(eyesVisualGrid)
@@ -180,7 +187,7 @@ async function eyesSetup() {
 
     try {           
         
-        const runner = eyesConfig.useGrid ? new VisualGridRunner() : new ClassicRunner();
+        const runner = eyesConfig.useGrid ? new VisualGridRunner(new RunnerOptions().testConcurrency(5)) : new ClassicRunner();
         let eyes = new Eyes(runner);
 
         const batchInfo = new BatchInfo(eyesConfig.batchName);
@@ -190,7 +197,6 @@ async function eyesSetup() {
 
         configuration
             .setBatch(batchInfo)
-            .setConcurrentSessions(5)
             .setAppName(eyesConfig.appName)
             .setTestName(eyesConfig.testName)
             .setMatchLevel(eyesConfig.matchLevel)

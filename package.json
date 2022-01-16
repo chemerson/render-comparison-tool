@@ -19,7 +19,6 @@
   "author": "Chris Emerson <chris.emerson@applitools.com>",
   "license": "UNLICENSED",
   "dependencies": {
-    "@applitools/eyes-sdk-core": "^12.24.13",
     "@applitools/eyes-selenium": "^4.58.3",
     "chai": "^4.3.4",
     "chromedriver": "^97.0.0",
